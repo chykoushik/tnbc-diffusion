@@ -54,14 +54,6 @@ README.md
 
 ## Raw Data Source
 
-### TCGA-BRCA (Clinical Data)
-https://portal.gdc.cancer.gov/projects/TCGA-BRCA  
-
-File:
-- clinical.project-tcga-brca.2026-04-12.tar.gz
-
----
-
 ### I-SPY2 Dataset
 https://www.cancerimagingarchive.net/collection/ispy2/
 
