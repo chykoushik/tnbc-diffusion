@@ -1,0 +1,4 @@
+feature_set,RF_AUC,LR_AUC
+radiomics only,0.7407,0.8148
+pde only,0.2778,0.3333
+combined,0.7593,0.7963

@@ -1,0 +1,17 @@
+patient_id,pid,vertices,faces,volume_cc,is_watertight,mesh_path
+ISPY2-164468,164468,55504,111682,-40.232,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\164468_tumor_mesh.stl
+ISPY2-196024,196024,31113,62038,-14.3879,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\196024_tumor_mesh.stl
+ISPY2-208303,208303,32760,52294,-1.0,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\208303_tumor_mesh.stl
+ISPY2-252748,252748,138935,226810,-8.3059,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\252748_tumor_mesh.stl
+ISPY2-489504,489504,18853,37814,-36.1713,True,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\489504_tumor_mesh.stl
+ISPY2-502486,502486,74374,116832,,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\502486_tumor_mesh.stl
+ISPY2-535779,535779,14493,22416,-0.4051,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\535779_tumor_mesh.stl
+ISPY2-564234,564234,11440,22912,-14.4058,True,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\564234_tumor_mesh.stl
+ISPY2-578975,578975,60070,121448,-50.7648,True,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\578975_tumor_mesh.stl
+ISPY2-622315,622315,97755,194462,-14.0842,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\622315_tumor_mesh.stl
+ISPY2-625854,625854,22182,34677,-0.4851,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\625854_tumor_mesh.stl
+ISPY2-697098,697098,62376,124222,-25.9224,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\697098_tumor_mesh.stl
+ISPY2-727804,727804,77030,125910,-7.9694,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\727804_tumor_mesh.stl
+ISPY2-829491,829491,34283,56338,-2.0014,True,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\829491_tumor_mesh.stl
+ISPY2-910706,910706,27185,54918,-50.4305,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\910706_tumor_mesh.stl
+ISPY2-934906,934906,16165,32096,-3.8277,False,E:\apply\journal publication\tnbc-diffusion\outputs\meshes\934906_tumor_mesh.stl
