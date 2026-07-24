@@ -1,0 +1,522 @@
+/* ============================================================
+   Tokens
+   ============================================================ */
+:root{
+  --paper: #eef1ef;
+  --paper-raised: #f7f8f6;
+  --ink: #12181b;
+  --ink-soft: #454f52;
+  --navy: #171d33;
+  --navy-raised: #1f2744;
+  --line: #d3d8d3;
+  --line-dark: #333c5c;
+
+  --hypoxia: #b7371f;   /* oxygen-deprived / failure zone */
+  --hypoxia-soft: #e7c3ba;
+  --oxygen: #1c7d69;    /* oxygen field */
+  --drug: #3f5486;      /* drug concentration */
+  --drug-soft: #ccd4e6;
+
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --max-w: 1120px;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+img{max-width:100%; display:block;}
+
+a{color:var(--drug);}
+a:hover{color:var(--hypoxia);}
+
+.wrap{
+  max-width:var(--max-w);
+  margin:0 auto;
+  padding:0 32px;
+}
+
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:0.09em;
+  text-transform:uppercase;
+  color:var(--hypoxia);
+  margin:0 0 14px;
+}
+
+h1,h2,h3{
+  font-family:var(--font-display);
+  font-weight:600;
+  letter-spacing:-0.01em;
+  margin:0 0 0.5em;
+}
+
+h2{
+  font-size:clamp(28px, 3.4vw, 40px);
+  color:var(--ink);
+}
+
+h3{
+  font-size:20px;
+  font-weight:600;
+}
+
+p{margin:0 0 1em; max-width:70ch;}
+
+.section{
+  padding:88px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.section.on-navy{
+  background:var(--navy);
+  color:#eef1ef;
+  border-bottom:1px solid var(--line-dark);
+}
+.section.on-navy h2, .section.on-navy h3{color:#f4f5f2;}
+.section.on-navy p{color:#c3c8cf;}
+.section.on-navy .eyebrow{color:#e28f7a;}
+
+.lede{
+  font-size:19px;
+  color:var(--ink-soft);
+  max-width:62ch;
+}
+.section.on-navy .lede{color:#c3c8cf;}
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero{
+  padding:72px 0 96px;
+  background:
+    radial-gradient(1100px 480px at 82% -10%, rgba(63,84,134,0.10), transparent 60%),
+    var(--paper);
+  border-bottom:1px solid var(--line);
+}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.15fr 0.85fr;
+  gap:56px;
+  align-items:center;
+}
+
+.hero-kicker{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  letter-spacing:0.09em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:20px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.hero-kicker .dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--hypoxia);
+  display:inline-block;
+}
+
+.hero h1{
+  font-size:clamp(34px, 5vw, 54px);
+  line-height:1.06;
+  margin-bottom:22px;
+}
+.hero h1 em{
+  font-style:italic;
+  color:var(--hypoxia);
+}
+
+.hero-sub{
+  font-size:18px;
+  color:var(--ink-soft);
+  max-width:56ch;
+  margin-bottom:30px;
+}
+
+.hero-meta{
+  font-family:var(--font-mono);
+  font-size:13px;
+  color:var(--ink-soft);
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 22px;
+  margin-bottom:34px;
+}
+.hero-meta strong{color:var(--ink); font-weight:600;}
+
+.btn-row{display:flex; gap:12px; flex-wrap:wrap;}
+
+.btn{
+  font-family:var(--font-mono);
+  font-size:13px;
+  letter-spacing:0.02em;
+  padding:12px 20px;
+  border-radius:3px;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--ink);
+  transition:transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.btn-primary{background:var(--ink); color:var(--paper);}
+.btn-primary:hover{background:var(--hypoxia); border-color:var(--hypoxia); color:#fff; transform:translateY(-1px);}
+.btn-ghost{background:transparent; color:var(--ink); border-color:var(--line-dark);}
+.btn-ghost:hover{border-color:var(--ink); color:var(--ink); transform:translateY(-1px);}
+
+/* ---- signature diagram ---- */
+.rings-frame{
+  position:relative;
+  aspect-ratio:1/1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.rings-caption{
+  font-family:var(--font-mono);
+  font-size:11.5px;
+  color:var(--ink-soft);
+  text-align:center;
+  margin-top:14px;
+  line-height:1.5;
+}
+.rings-caption b{color:var(--ink); font-weight:600;}
+
+@media (prefers-reduced-motion: no-preference){
+  .pulse-ring{ animation: pulseRing 6.3s ease-in-out infinite; transform-origin:center; }
+  .pulse-ring.r2{ animation-delay:0.4s; }
+  .pulse-ring.r3{ animation-delay:0.8s; }
+  .pulse-core{ animation: pulseCore 6.3s ease-in-out infinite; transform-origin:center; }
+}
+@keyframes pulseRing{
+  0%, 100%{ opacity:0.25; }
+  8%{ opacity:0.95; }
+  40%{ opacity:0.15; }
+}
+@keyframes pulseCore{
+  0%, 100%{ opacity:0.7; }
+  8%{ opacity:1; }
+  40%{ opacity:0.55; }
+}
+
+/* ============================================================
+   Stat strip
+   ============================================================ */
+.stat-strip{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:var(--paper-raised);
+}
+.stat{
+  padding:30px 28px;
+  border-right:1px solid var(--line);
+}
+.stat:last-child{border-right:none;}
+.stat .num{
+  font-family:var(--font-display);
+  font-size:34px;
+  font-weight:600;
+  color:var(--hypoxia);
+  line-height:1;
+  margin-bottom:8px;
+}
+.stat .label{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:var(--ink-soft);
+  line-height:1.45;
+}
+
+@media (max-width:800px){
+  .stat-strip{grid-template-columns:repeat(2,1fr);}
+  .stat:nth-child(2){border-right:none;}
+}
+
+/* ============================================================
+   Two column content blocks
+   ============================================================ */
+.split{
+  display:grid;
+  grid-template-columns:0.9fr 1.1fr;
+  gap:56px;
+  align-items:start;
+}
+.split.rev{grid-template-columns:1.1fr 0.9fr;}
+.split.rev .split-media{order:2;}
+
+.split-media img{
+  border:1px solid var(--line);
+  background:#fff;
+}
+.on-navy .split-media img{border-color:var(--line-dark);}
+
+.figcap{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:var(--ink-soft);
+  margin-top:10px;
+  line-height:1.55;
+}
+.on-navy .figcap{color:#9aa1ac;}
+
+@media (max-width:860px){
+  .split, .split.rev{grid-template-columns:1fr;}
+  .split.rev .split-media{order:0;}
+}
+
+/* ============================================================
+   Theorem cards
+   ============================================================ */
+.theorem-list{
+  display:grid;
+  gap:1px;
+  background:var(--line-dark);
+  border:1px solid var(--line-dark);
+  margin-top:44px;
+}
+.theorem{
+  background:var(--navy);
+  padding:34px 36px;
+  display:grid;
+  grid-template-columns:64px 1fr;
+  gap:24px;
+}
+.theorem .tnum{
+  font-family:var(--font-display);
+  font-size:40px;
+  font-weight:600;
+  color:var(--hypoxia-soft);
+  line-height:1;
+}
+.theorem h3{margin-bottom:10px; color:#f4f5f2;}
+.theorem p{color:#c3c8cf; margin-bottom:0.7em;}
+.theorem .formula{
+  font-family:var(--font-mono);
+  font-size:13.5px;
+  color:#e6cdc4;
+  background:rgba(183,55,31,0.12);
+  border-left:2px solid var(--hypoxia);
+  padding:10px 14px;
+  margin:14px 0;
+  overflow-x:auto;
+}
+.theorem .verdict{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:#9fd7c4;
+  margin-top:10px;
+}
+
+@media (max-width:640px){
+  .theorem{grid-template-columns:1fr; gap:8px;}
+}
+
+/* ============================================================
+   Pipeline steps
+   ============================================================ */
+.pipeline{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:24px;
+  margin-top:20px;
+}
+.pipe-step{
+  border-top:2px solid var(--ink);
+  padding-top:14px;
+}
+.pipe-step .pnum{
+  font-family:var(--font-mono);
+  font-size:12px;
+  color:var(--hypoxia);
+}
+.pipe-step h3{font-size:16.5px; margin:6px 0 8px;}
+.pipe-step p{font-size:14.5px; color:var(--ink-soft); margin-bottom:0;}
+
+@media (max-width:860px){
+  .pipeline{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:520px){
+  .pipeline{grid-template-columns:1fr;}
+}
+
+/* ============================================================
+   Tables
+   ============================================================ */
+.table-wrap{
+  overflow-x:auto;
+  margin-top:28px;
+  border:1px solid var(--line);
+}
+table{
+  border-collapse:collapse;
+  width:100%;
+  font-family:var(--font-mono);
+  font-size:13.2px;
+  background:var(--paper-raised);
+}
+th, td{
+  padding:10px 14px;
+  text-align:left;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+th{
+  font-weight:600;
+  color:var(--ink);
+  background:#e4e8e3;
+  letter-spacing:0.01em;
+}
+td{color:var(--ink-soft);}
+tr:hover td{background:#f1f3ef; color:var(--ink);}
+.pcr-1{color:var(--oxygen); font-weight:600;}
+.pcr-0{color:var(--hypoxia); font-weight:600;}
+
+/* ============================================================
+   Result grid (ablation)
+   ============================================================ */
+.ablation-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+  margin-top:28px;
+}
+.ablation-cell{
+  background:var(--paper-raised);
+  color:var(--ink);
+  padding:24px 22px;
+}
+.ablation-cell h4{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
+  color:var(--ink-soft);
+  margin:0 0 14px;
+}
+.ablation-cell .auc{
+  font-family:var(--font-display);
+  font-size:15px;
+  margin:4px 0;
+  color:var(--ink-soft);
+}
+.ablation-cell .auc b{
+  font-size:22px;
+  margin-right:6px;
+  color:var(--ink);
+}
+
+@media (max-width:760px){
+  .ablation-grid{grid-template-columns:1fr;}
+}
+
+/* ============================================================
+   Limitations / clinical list
+   ============================================================ */
+.checklist{
+  list-style:none;
+  padding:0;
+  margin:28px 0 0;
+  display:grid;
+  gap:1px;
+  background:var(--line);
+  border:1px solid var(--line);
+}
+.checklist li{
+  background:var(--paper-raised);
+  padding:20px 24px;
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:14px;
+}
+.checklist .mark{
+  font-family:var(--font-mono);
+  color:var(--hypoxia);
+  font-weight:600;
+}
+.checklist p{margin:0; font-size:14.5px;}
+.checklist strong{color:var(--ink);}
+
+/* ============================================================
+   Footer / citation
+   ============================================================ */
+.footer{
+  background:var(--navy);
+  color:#c3c8cf;
+  padding:64px 0 40px;
+}
+.footer h3{color:#f4f5f2;}
+.cite-block{
+  font-family:var(--font-mono);
+  font-size:13px;
+  line-height:1.7;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--line-dark);
+  padding:22px 24px;
+  margin:22px 0 30px;
+  color:#dfe2e0;
+  overflow-x:auto;
+}
+.footer-links{
+  display:flex;
+  gap:28px;
+  flex-wrap:wrap;
+  font-family:var(--font-mono);
+  font-size:13px;
+  margin-bottom:36px;
+}
+.footer-links a{color:#dfe2e0;}
+.footer-links a:hover{color:var(--hypoxia-soft);}
+.footer-bottom{
+  border-top:1px solid var(--line-dark);
+  padding-top:24px;
+  font-size:12.5px;
+  color:#7d8590;
+  display:flex;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+/* ============================================================
+   Misc
+   ============================================================ */
+.small-note{
+  font-family:var(--font-mono);
+  font-size:12.5px;
+  color:var(--ink-soft);
+  border-left:2px solid var(--drug);
+  padding-left:14px;
+  margin-top:26px;
+}
+.on-navy .small-note{border-left-color:var(--hypoxia-soft);}
+
+.two-col-text{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:48px;
+}
+@media (max-width:760px){
+  .two-col-text{grid-template-columns:1fr;}
+}
+
+::selection{background:var(--hypoxia); color:#fff;}

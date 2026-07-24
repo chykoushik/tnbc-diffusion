@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometry-Driven Therapy Failure in TNBC — Koushik Chowdhury</title>
+<meta name="description" content="A reaction-diffusion model of drug delivery failure in triple-negative breast cancer, with formal existence theorems and validation on 15 I-SPY2 patients.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-kicker"><span class="dot"></span> Mathematical oncology · Preprint</div>
+      <h1>Some tumor cells survive chemotherapy<br>because the drug <em>never arrives</em>.</h1>
+      <p class="hero-sub">
+        A patient-specific reaction-diffusion model of triple-negative breast cancer, proving
+        that spatial drug-insufficient zones exist before treatment even begins, and locating
+        them directly from a baseline MRI scan.
+      </p>
+      <div class="hero-meta">
+        <span><strong>Koushik Chowdhury</strong></span>
+        <span>Universität des Saarlandes</span>
+        <span>ORCID 0009-0007-6319-3769</span>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#results">See the results</a>
+        <a class="btn btn-ghost" href="https://github.com/chykoushik/tnbc-diffusion">Code on GitHub</a>
+        <a class="btn btn-ghost" href="https://www.cancerimagingarchive.net/collection/ispy2">I-SPY2 data</a>
+      </div>
+    </div>
+
+    <div class="rings-frame">
+      <svg viewBox="0 0 400 400" width="100%" role="img" aria-label="Diagram of drug concentration decaying from the tumor boundary inward, leaving an untreated core">
+        <circle cx="200" cy="200" r="176" fill="none" stroke="#333c5c" stroke-width="1.5" stroke-dasharray="3 5" opacity="0.55"/>
+        <circle class="pulse-ring r3" cx="200" cy="200" r="176" fill="#3f5486" opacity="0.10"/>
+        <circle class="pulse-ring r3" cx="200" cy="200" r="146" fill="#3f5486" opacity="0.14"/>
+        <circle class="pulse-ring r2" cx="200" cy="200" r="116" fill="#3f5486" opacity="0.20"/>
+        <circle class="pulse-ring r2" cx="200" cy="200" r="88"  fill="#5a4a63" opacity="0.28"/>
+        <circle class="pulse-ring r1" cx="200" cy="200" r="62"  fill="#8a3d2c" opacity="0.55"/>
+        <circle class="pulse-core"   cx="200" cy="200" r="38"  fill="#b7371f" opacity="0.9"/>
+        <line x1="200" y1="200" x2="200" y2="24" stroke="#e28f7a" stroke-width="1" stroke-dasharray="2 4" opacity="0.7"/>
+        <text x="206" y="70" fill="#c3c8cf" font-family="IBM Plex Mono, monospace" font-size="11">∂Ω</text>
+        <text x="200" y="204" fill="#f4e9e6" font-family="IBM Plex Mono, monospace" font-size="10.5" text-anchor="middle">Ω_h</text>
+      </svg>
+      <p class="rings-caption">Drug enters at the tumor boundary <b>∂Ω</b> and decays over a
+        characteristic length <b>L_d = √(D_d/γ) ≈ 0.29 mm</b>. Every tumor in this cohort
+        was larger than that, so a core region <b>Ω_h</b> never saw a therapeutic dose.</p>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     STAT STRIP
+     ============================================================ -->
+<div class="stat-strip">
+  <div class="stat"><div class="num">46.6%</div><div class="label">of mean tumor volume received sub-therapeutic drug under standard dosing</div></div>
+  <div class="stat"><div class="num">0.29mm</div><div class="label">computed drug penetration depth, matching published doxorubicin measurements</div></div>
+  <div class="stat"><div class="num">15</div><div class="label">TNBC patients, I-SPY2 trial, reconstructed from raw DICOM to 3D tumor geometry</div></div>
+  <div class="stat"><div class="num">03</div><div class="label">theorems proving failure zones must exist, and when they can be dosed away</div></div>
+</div>
+
+<!-- ============================================================
+     ABSTRACT
+     ============================================================ -->
+<section class="section" id="abstract">
+  <div class="wrap">
+    <p class="eyebrow">Abstract</p>
+    <h2>The physics of the tumor, not just its biology, decides who responds.</h2>
+    <p class="lede">
+      Fewer than three in ten TNBC patients see a complete response to standard chemotherapy.
+      The usual explanation is molecular resistance. This paper asks a simpler, geometric
+      question first: does the drug even reach the cell?
+    </p>
+    <div class="two-col-text" style="margin-top:36px;">
+      <div>
+        <h3>The model</h3>
+        <p>
+          Three coupled fields, tumor cell density, oxygen, and drug concentration, evolve
+          by reaction-diffusion over the patient's actual tumor shape, reconstructed from MRI.
+          A failure zone is defined as any point where oxygen and drug both stay below their
+          effective thresholds at once.
+        </p>
+      </div>
+      <div>
+        <h3>The claim</h3>
+        <p>
+          Given a tumor's size and shape alone, before a single dose is given, it is possible
+          to prove whether a drug-insufficient region must appear, how large it will get, and
+          the dosing frequency that would make it disappear.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     THE PROBLEM / PENETRATION DEPTH
+     ============================================================ -->
+<section class="section" id="problem">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Why geometry matters</p>
+      <h2>A pharmacological sanctuary, made precise.</h2>
+      <p>
+        Experimentally, cytotoxic drugs are known to penetrate only a few cell layers past
+        the nearest vessel before their concentration drops too low to matter. This paper
+        turns that observation into a length scale that falls directly out of the drug's own
+        diffusion equation.
+      </p>
+      <p>
+        At steady state, drug supplied at the tumor boundary decays over a characteristic
+        distance <code>L_d = √(D_d / γ)</code>, where <code>D_d</code> is the drug's
+        diffusivity through tissue and <code>γ</code> is its tissue clearance rate. Any point
+        further than <code>L_d · log(d_peak / d_thr)</code> from the boundary will sit below
+        the therapeutic threshold no matter how much drug is given at the surface.
+      </p>
+      <p>
+        With baseline doxorubicin parameters, that works out to roughly <strong>0.29&nbsp;mm</strong>.
+        The smallest tumor in this cohort had a radius of about 8&nbsp;mm. Every patient's
+        geometry, by construction, contained a region the drug could not reach.
+      </p>
+    </div>
+    <div class="split-media">
+      <svg viewBox="0 0 420 260" width="100%" role="img" aria-label="Exponential decay curve of drug concentration with distance from tumor boundary">
+        <line x1="40" y1="220" x2="400" y2="220" stroke="#333c5c" stroke-width="1"/>
+        <line x1="40" y1="220" x2="40" y2="20" stroke="#333c5c" stroke-width="1"/>
+        <text x="40" y="238" font-family="IBM Plex Mono" font-size="10.5" fill="#454f52">∂Ω</text>
+        <text x="380" y="238" font-family="IBM Plex Mono" font-size="10.5" fill="#454f52">tumor core</text>
+        <text x="10" y="24" font-family="IBM Plex Mono" font-size="10.5" fill="#454f52">d(x)</text>
+        <path d="M 40 30 C 110 60, 140 150, 400 210" fill="none" stroke="#3f5486" stroke-width="2.5"/>
+        <line x1="40" y1="120" x2="400" y2="120" stroke="#b7371f" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="356" y="114" font-family="IBM Plex Mono" font-size="10.5" fill="#b7371f">d_thr</text>
+        <line x1="118" y1="220" x2="118" y2="20" stroke="#d3d8d3" stroke-width="1" stroke-dasharray="2 3"/>
+        <text x="122" y="34" font-family="IBM Plex Mono" font-size="10.5" fill="#454f52">L_d ≈ 0.29 mm</text>
+        <rect x="150" y="20" width="250" height="200" fill="#b7371f" opacity="0.06"/>
+        <text x="255" y="45" font-family="IBM Plex Mono" font-size="11" fill="#b7371f" text-anchor="middle">Ω_h — below threshold</text>
+      </svg>
+      <p class="figcap">Drug concentration decays exponentially from the tumor boundary.
+        Past L_d, concentration is already below d_thr — the shaded region receives no
+        effective dose regardless of the dose given at the surface.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     THEOREMS
+     ============================================================ -->
+<section class="section on-navy" id="theorems">
+  <div class="wrap">
+    <p class="eyebrow">Main results</p>
+    <h2>Three theorems, one on existence, one on why, one on what to do about it.</h2>
+    <p class="lede">Each proof sketch reduces to a physical argument: a maximum principle,
+      a comparison of sub- and supersolutions, and a contraction on the dosing period.</p>
+
+    <div class="theorem-list">
+      <div class="theorem">
+        <div class="tnum">01</div>
+        <div>
+          <h3>Well-posedness on patient-specific geometry</h3>
+          <p>The coupled system has a unique, bounded, non-negative weak solution on any
+            bounded Lipschitz domain, which is exactly the regularity that an MRI-reconstructed
+            tumor surface actually has.</p>
+          <div class="verdict">→ the model is mathematically sound on real, irregular tumor shapes, not just idealized spheres.</div>
+        </div>
+      </div>
+
+      <div class="theorem">
+        <div class="tnum">02</div>
+        <div>
+          <h3>Existence and persistence of failure zones</h3>
+          <p>If a tumor contains a point far enough from its boundary, and its local cell
+            density is high enough to out-consume oxygen diffusion, then a small ball around
+            that point becomes and stays a failure zone.</p>
+          <div class="formula">|Ω_h(t)| ≥ ω₃ρ³ for all t ≥ t*</div>
+          <p>Compact, convex, low-density tumors are unlikely to satisfy this. Large, irregular
+            tumors with necrotic cores are much more likely to.</p>
+        </div>
+      </div>
+
+      <div class="theorem">
+        <div class="tnum">03</div>
+        <div>
+          <h3>A dosing frequency that erases the failure zone</h3>
+          <p>Because drug supply is periodic, its long-run concentration converges to a fixed
+            periodic orbit. There is a critical period P* below which that orbit stays above
+            threshold everywhere, and above which a failure zone reappears and grows with
+            P − P*.</p>
+          <div class="formula">P* = (1/γ)·log(d_peak/d_thr) − (L_d/γ)·log(d_peak/d_thr)·dist(x*,∂Ω)/L_d</div>
+          <div class="verdict">→ P* is computable from one baseline MRI and the drug's own pharmacokinetics, before treatment starts.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PIPELINE
+     ============================================================ -->
+<section class="section" id="pipeline">
+  <div class="wrap">
+    <p class="eyebrow">From scanner to simulation</p>
+    <h2>A full pipeline, from raw DICOM to a failure zone map.</h2>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pnum">STEP 1</div>
+        <h3>Cohort selection</h3>
+        <p>360 TNBC patients filtered from I-SPY2 by hormone receptor and HER2 status.
+          16 had complete baseline DCE-MRI available in TCIA; one produced no usable
+          mesh, leaving 15.</p>
+      </div>
+      <div class="pipe-step">
+        <div class="pnum">STEP 2</div>
+        <h3>Mask extraction</h3>
+        <p>Tumor label identified from the multi-label segmentation DICOM by smallest
+          non-background voxel count. Computed volumes matched the trial's radiomic
+          volumes within 15%.</p>
+      </div>
+      <div class="pipe-step">
+        <div class="pnum">STEP 3</div>
+        <h3>Mesh reconstruction</h3>
+        <p>Marching cubes at isosurface 0.5, then Laplacian smoothing, turns each binary
+          mask into the 3D tumor surface the PDE solver runs on.</p>
+      </div>
+      <div class="pipe-step">
+        <div class="pnum">STEP 4</div>
+        <h3>PDE simulation</h3>
+        <p>Finite-difference solve of all three fields over an 84-day, four-cycle AC-T
+          schedule, on a grid matched to the scan's own voxel spacing.</p>
+      </div>
+    </div>
+
+    <div class="split" style="margin-top:64px;">
+      <div class="split-media">
+        <img src="assets/fig1_mri_mask.png" alt="DCE-MRI baseline scan for patient ISPY2-164468 with tumor mask overlay">
+        <p class="figcap">Fig. 1 — Baseline DCE-MRI for patient ISPY2-164468. Left: raw scan.
+          Centre: extracted binary tumor mask. Right: mask overlaid, confirming it lines up
+          with the contrast-enhancing tissue.</p>
+      </div>
+      <div>
+        <h3>Why the shape itself is the point</h3>
+        <p>
+          A sphere is the best possible shape for drug delivery: every interior point is as
+          close to the surface as geometry allows. Real TNBC tumors are not spheres. They
+          branch, they have thin connected clusters, they have deep interior folds where
+          the distance to the nearest supplying boundary is far larger than the tumor's
+          nominal radius would suggest.
+        </p>
+        <p>
+          That is the entire reason a patient-specific geometry, not a generic spherical
+          approximation, is required to compute where a failure zone will actually sit.
+        </p>
+      </div>
+    </div>
+
+    <div class="split rev" style="margin-top:64px;">
+      <div class="split-media">
+        <img src="assets/fig2_mesh.png" alt="Reconstructed 3D tumor surface mesh for patient ISPY2-164468">
+        <p class="figcap">Fig. 2 — Reconstructed 3D surface for the same tumor. The irregular,
+          non-convex, branching shape is typical of the cohort, and it is exactly this kind
+          of geometry Theorem 1 is built to handle.</p>
+      </div>
+      <div>
+        <h3>What the solver actually resolves</h3>
+        <p>
+          Degree-two finite elements resolve the curved oxygen and drug profiles near the
+          boundary with far fewer nodes than a linear mesh would need. A semi-implicit
+          Crank-Nicolson scheme keeps the nonlinear kill and consumption terms stable, and
+          an adaptive time step tightens automatically around each of the four dosing days.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SIMULATION OUTPUT
+     ============================================================ -->
+<section class="section on-navy" id="simulation">
+  <div class="wrap split">
+    <div>
+      <p class="eyebrow">Simulation output</p>
+      <h2>Watching the failure zone appear.</h2>
+      <p>
+        For patient ISPY2-164468, the failure zone was empty at day 0. It grew to 1,096
+        voxels by day 21, to 9,394 by day 42, and to 14,211 by day 84, the persistence
+        predicted by Theorem 2 playing out voxel by voxel.
+      </p>
+      <p>
+        By day 84 the mean oxygen concentration inside the tumor mask had fallen to
+        0.68&nbsp;mmHg, far under the 5&nbsp;mmHg hypoxic threshold, while tissue just
+        outside the tumor stayed near the 40&nbsp;mmHg boundary value. That contrast is
+        driven by how much oxygen a dense tumor cell population consumes, not by anything
+        about the drug at all.
+      </p>
+      <p class="small-note">Sensitivity testing later in the paper shows this is the dominant
+        effect: hypoxia, not drug transport, decides where the failure zone sits.</p>
+    </div>
+    <div class="split-media">
+      <img src="assets/fig3_pde_output.png" alt="PDE simulation output at day 84 showing oxygen field, drug field, and computed failure zone">
+      <p class="figcap">Fig. 3 — Day 84, middle axial slice. Left: oxygen field (red = deeply
+        hypoxic). Centre: drug field, showing the diffusion gradient from the boundary
+        inward. Right: the computed failure zone in white.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     COHORT RESULTS
+     ============================================================ -->
+<section class="section" id="results">
+  <div class="wrap">
+    <p class="eyebrow">Cohort results</p>
+    <h2>All 15 patients. No exceptions.</h2>
+    <p class="lede">
+      Failure zone fraction ranged from 0.378 to 0.527, mean 0.466. Every tumor in this
+      cohort, complete responder or not, carried a substantial region no dose could reach
+      under the standard three-weekly schedule.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Patient ID</th><th>Tumor vol. (cc)</th><th>FZ vol. (cc)</th><th>FZ fraction</th><th>pCR</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ISPY2-164468</td><td>31.99</td><td>15.46</td><td>0.483</td><td class="pcr-0">0</td></tr>
+          <tr><td>ISPY2-196024</td><td>17.24</td><td>7.92</td><td>0.459</td><td class="pcr-0">0</td></tr>
+          <tr><td>ISPY2-208303</td><td>6.24</td><td>2.55</td><td>0.409</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-252748</td><td>18.06</td><td>8.97</td><td>0.497</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-489504</td><td>30.39</td><td>15.61</td><td>0.514</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-535779</td><td>2.75</td><td>1.04</td><td>0.378</td><td class="pcr-0">0</td></tr>
+          <tr><td>ISPY2-564234</td><td>13.41</td><td>6.56</td><td>0.489</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-578975</td><td>33.90</td><td>17.87</td><td>0.527</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-622315</td><td>38.00</td><td>15.18</td><td>0.400</td><td class="pcr-0">0</td></tr>
+          <tr><td>ISPY2-625854</td><td>2.14</td><td>1.04</td><td>0.487</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-697098</td><td>24.62</td><td>11.05</td><td>0.449</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-727804</td><td>24.77</td><td>10.96</td><td>0.442</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-829491</td><td>5.45</td><td>2.76</td><td>0.506</td><td class="pcr-0">0</td></tr>
+          <tr><td>ISPY2-910706</td><td>40.46</td><td>19.65</td><td>0.486</td><td class="pcr-1">1</td></tr>
+          <tr><td>ISPY2-934906</td><td>5.82</td><td>2.71</td><td>0.465</td><td class="pcr-0">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small-note">pCR = pathological complete response. Failure zone fraction alone
+      does not separate responders from non-responders, which is expected: response also
+      depends on molecular factors this physical model does not capture.</p>
+
+    <div class="split" style="margin-top:56px;">
+      <div class="split-media">
+        <img src="assets/fig4_fz_vs_volume.png" alt="Scatter plot of failure zone volume against total tumor volume for 15 patients, coloured by treatment response">
+        <p class="figcap">Fig. 4 — Failure zone volume scales almost linearly with total tumor
+          volume, regardless of eventual response.</p>
+      </div>
+      <div>
+        <h3>Reading the scatter</h3>
+        <p>
+          The near-linear relationship is itself informative. It says the failure zone
+          fraction is close to a geometric constant for this drug and this disease, set
+          mostly by the mismatch between tumor size and penetration depth, rather than by
+          anything specific to an individual patient's biology.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SENSITIVITY
+     ============================================================ -->
+<section class="section" id="sensitivity">
+  <div class="wrap split rev">
+    <div class="split-media">
+      <img src="assets/fig5_sensitivity.png" alt="Bar chart showing change in failure zone fraction when drug diffusivity, decay rate, and proliferation rate are each varied by 20 percent">
+      <p class="figcap">Fig. 5 — Varying drug diffusivity or decay rate by 20% moves the
+        failure zone fraction by at most 0.02%. Varying proliferation rate moves it by up
+        to 0.37%.</p>
+    </div>
+    <div>
+      <p class="eyebrow">Sensitivity analysis</p>
+      <h2>It is the oxygen, not the drug.</h2>
+      <p>
+        By day 84, oxygen inside the tumor mask has already collapsed to 0.68&nbsp;mmHg,
+        far under the 5&nbsp;mmHg hypoxic threshold. Whether the drug diffuses slightly
+        faster or slower barely changes which voxels are hypoxic, because hypoxia is
+        already the binding constraint almost everywhere.
+      </p>
+      <p>
+        The practical consequence: a drug engineered to diffuse further or decay slower
+        would not, on its own, close this failure zone. Something that addresses the
+        hypoxia directly, a hypoxia-activated prodrug, or a vascular-normalizing agent
+        given ahead of chemotherapy, is more likely to help.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     PREDICTION
+     ============================================================ -->
+<section class="section on-navy" id="prediction">
+  <div class="wrap">
+    <p class="eyebrow">Does the failure zone predict outcome?</p>
+    <h2>A proof of concept, honestly reported.</h2>
+    <p class="lede">
+      Leave-one-out cross validation on 15 patients, random forest and logistic regression,
+      three feature groups: radiomics, PDE-derived features, and the two combined.
+    </p>
+
+    <div class="ablation-grid">
+      <div class="ablation-cell">
+        <h4>Radiomics only</h4>
+        <div class="auc"><b>0.741</b> Random forest AUC</div>
+        <div class="auc"><b>0.815</b> Logistic regression AUC</div>
+      </div>
+      <div class="ablation-cell">
+        <h4>PDE features only</h4>
+        <div class="auc"><b>0.278</b> Random forest AUC</div>
+        <div class="auc"><b>0.333</b> Logistic regression AUC</div>
+      </div>
+      <div class="ablation-cell">
+        <h4>Combined</h4>
+        <div class="auc"><b>0.759</b> Random forest AUC</div>
+        <div class="auc"><b>0.796</b> Logistic regression AUC</div>
+      </div>
+    </div>
+    <p class="small-note">
+      Radiomics dominate on this cohort. Adding PDE features nudges random forest AUC up
+      by 0.018 and logistic regression AUC down by 0.019. Fifteen patients is not enough
+      to call this a real effect either way, but the failure zone fraction still ranks
+      third by feature importance in the ensemble model.
+    </p>
+
+    <div class="split" style="margin-top:56px;">
+      <div class="split-media">
+        <img src="assets/fig6_roc.png" alt="ROC curves for the combined feature set classifier">
+        <p class="figcap">Fig. 6 — ROC curves, combined feature set, leave-one-out cross
+          validation.</p>
+      </div>
+      <div class="split-media">
+        <img src="assets/fig7_feature_importance.png" alt="Feature importance ranking from the random forest classifier">
+        <p class="figcap">Fig. 7 — Random forest feature importance. Failure zone fraction
+          (fz_fraction) sits third, behind early functional tumor volume change and
+          baseline functional tumor volume.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CLINICAL IMPLICATIONS / LIMITATIONS
+     ============================================================ -->
+<section class="section" id="clinical">
+  <div class="wrap">
+    <p class="eyebrow">What this could change, and what it can't yet claim</p>
+    <h2>Three questions a clinician could act on.</h2>
+
+    <ul class="checklist">
+      <li>
+        <span class="mark">01</span>
+        <p><strong>Personalize dosing frequency, not just dose.</strong> P* depends on how
+          far the tumor's most interior point sits from its boundary, a distance measurable
+          from a single pre-treatment MRI.</p>
+      </li>
+      <li>
+        <span class="mark">02</span>
+        <p><strong>Flag risk at diagnosis, not after cycle one.</strong> The PDE failure
+          zone fraction needs only the baseline scan. Current radiomic predictors need a
+          follow-up scan after the first treatment cycle to work well.</p>
+      </li>
+      <li>
+        <span class="mark">03</span>
+        <p><strong>Target hypoxia, not drug transport.</strong> The sensitivity analysis
+          suggests reformulating a drug for better diffusion would not close this gap.
+          Treating the oxygen problem directly likely would.</p>
+      </li>
+    </ul>
+
+    <p class="small-note" style="margin-top:40px;">
+      <strong>Limitations:</strong> single homogeneous cell population, fixed tumor geometry
+      over the full 84-day course, literature-derived rather than per-patient transport
+      parameters, and a 15-patient cohort too small to validate any clinical claim on its
+      own. Parameters were calibrated to doxorubicin and may need recalibration for
+      paclitaxel or carboplatin.
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="footer">
+  <div class="wrap">
+    <h3>Cite this work</h3>
+    <div class="cite-block">
+Chowdhury, K. (2026). Geometry-Driven Therapy Failure in Triple-Negative
+Breast Cancer: A Reaction-Diffusion Model with Machine Learning Validation.
+Preprint. Universität des Saarlandes.
+    </div>
+
+    <div class="footer-links">
+      <a href="https://github.com/chykoushik/tnbc-diffusion">GitHub repository →</a>
+      <a href="https://www.cancerimagingarchive.net/collection/ispy2">I-SPY2 dataset (TCIA) →</a>
+      <a href="https://orcid.org/0009-0007-6319-3769">ORCID →</a>
+      <a href="mailto:s8kochow@stud.uni-saarland.de">Contact →</a>
+    </div>
+
+    <div class="footer-bottom">
+      <span>Koushik Chowdhury · Universität des Saarlandes</span>
+      <span>No competing interests declared · Publicly available, de-identified data</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
